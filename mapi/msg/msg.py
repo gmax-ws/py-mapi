@@ -241,6 +241,22 @@ class MsgRoot(MsgStorage):
         _data = self.stream(PidTagMessageClass, PtypString)
         return utf16(_data)
 
+    def message_id(self):
+        _data = self.stream(PidTagInternetMessageId, PtypString)
+        return utf16(_data)
+
+    def display_to(self):
+        _data = self.stream(PidTagDisplayTo, PtypString)
+        return utf16(_data)
+
+    def display_cc(self):
+        _data = self.stream(PidTagDisplayCc, PtypString)
+        return utf16(_data)
+
+    def display_bcc(self):
+        _data = self.stream(PidTagDisplayBcc, PtypString)
+        return utf16(_data)
+
     def sender_name(self):
         _data = self.stream(PidTagSenderName, PtypString)
         return utf16(_data)
@@ -292,19 +308,27 @@ class MsgRoot(MsgStorage):
         time = self.props.get_property_int64(PidTagMessageDeliveryTime, PtypTime)
         return filetime2datetime(time[1])
 
+    def message_submit_time(self):
+        time = self.props.get_property_int64(PidTagClientSubmitTime, PtypTime)
+        return filetime2datetime(time[1])
+
+    def message_receipt_time(self):
+        time = self.props.get_property_int64(PidTagReceiptTime, PtypTime)
+        return filetime2datetime(time[1])
+
     def rtf_as_html(self):
         data = self.body_rtf()
         if data is None:
             return None
         else:
-            return RtfParser(data.decode("ascii")).decode_html()
+            return RtfParser(data.decode("utf-8")).decode_html()
 
     def rtf_as_text(self):
         data = self.body_rtf()
         if data is None:
             return None
         else:
-            return RtfParser(data.decode("ascii")).decode_text()
+            return RtfParser(data.decode("utf-8")).decode_text()
 
     @staticmethod
     def _decompress(data):
@@ -390,7 +414,7 @@ class MsgAttachment(MsgStorage):
         return self.props.get_property(PidTagAttachMethod, PtypInteger32)[1]
 
     def is_attachment_msg(self):
-        return "message / rfc822" == self.get_attachment_mime()
+        return "message/rfc822" == self.get_attachment_mime()
 
 
 class MsgAttachments:

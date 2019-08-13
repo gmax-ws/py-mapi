@@ -6,4 +6,7 @@ HUNDREDS_OF_NANOSECONDS = 10000000
 
 
 def filetime2datetime(file_time):
-    return datetime.utcfromtimestamp((file_time - EPOCH_AS_FILETIME) / HUNDREDS_OF_NANOSECONDS)
+    if file_time is None:
+        return None
+    else:
+        return datetime.utcfromtimestamp((file_time - EPOCH_AS_FILETIME) / HUNDREDS_OF_NANOSECONDS)

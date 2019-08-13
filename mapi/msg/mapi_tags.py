@@ -6,7 +6,8 @@ __all__ = ['PidTagAttachDataBinary', 'PidTagAttachDataObject', 'PidTagDisplayNam
            'PidTagSentRepresentingEmailAddress', 'PidTagMessageClass', 'PidTagSenderName', 'PidTagSenderEmailAddress',
            'PidTagSenderSmtpAddress', 'PidTagAttachContentId', 'PidTagRecipientDisplayName', 'PidTagHasAttachments',
            'PidTagMessageDeliveryTime', 'PidTagObjectType', 'PidTagAttachMethod', 'PidTagRtfInSync',
-           'PidTagNameidStreamGuid', 'PidTagNameidStreamEntry', 'PidTagNameidStreamString']
+           'PidTagNameidStreamGuid', 'PidTagNameidStreamEntry', 'PidTagNameidStreamString', 'PidTagInternetMessageId',
+           'PidTagClientSubmitTime', 'PidTagReceiptTime', 'PidTagDisplayCc', 'PidTagDisplayBcc']
 
 PidTagNameidBucketCount = 0x0001
 PidTagNameidStreamGuid = 0x0002
@@ -38,17 +39,18 @@ PidTagContainerClass = 0x3613
 PidTagPstHiddenCount = 0x6635
 PidTagPstHiddenUnread = 0x6636
 PidTagImportance = 0x0017
-PidTagMessageClassW = 0x001A
+PidTagMessageClass = 0x001A
 PidTagSensitivity = 0x0036
-PidTagSubjectW = 0x0037
+PidTagSubject = 0x0037
 PidTagClientSubmitTime = 0x0039
-PidTagSentRepresentingNameW = 0x0042
+PidTagSentRepresentingName = 0x0042
 PidTagMessageToMe = 0x0057
 PidTagMessageCcMe = 0x0058
-PidTagConversationTopicW = 0x0070
+PidTagConversationTopic = 0x0070
 PidTagConversationIndex = 0x0071
-PidTagDisplayCcW = 0x0E03
-PidTagDisplayToW = 0x0E04
+PidTagDisplayCc = 0x0E03
+PidTagDisplayTo = 0x0E04
+PidTagDisplayBcc = 0x0E02
 PidTagMessageDeliveryTime = 0x0E06
 PidTagMessageFlags = 0x0E07
 PidTagMessageSize = 0x0E08
@@ -94,8 +96,6 @@ PidTagSentRepresentingSmtpAddress = 0x5D02
 PidTagAttachMimeTag = 0x370E
 PidTagAttachExtension = 0x3703
 PidTagAttachLongFilename = 0x3707
-PidTagDisplayTo = 0x0E04
-PidTagSubject = 0x0037
 PidTagBodyHtml = 0x1013
 PidTagBodyContentLocation = 0x1014
 PidTagBodyContentId = 0x1015
@@ -103,11 +103,11 @@ PidTagAttachSize = 0x0E20
 PidTagAttachNumber = 0x0E21
 PidTagSmtpAddress = 0x39FE
 PidTagOriginalSenderName = 0x005A
-PidTagSentRepresentingName = 0x0042
 PidTagSentRepresentingEmailAddress = 0x0065
-PidTagMessageClass = 0x001A
 PidTagSenderEmailAddress = 0x0C1F
 PidTagAttachContentId = 0x3712
 PidTagRecipientDisplayName = 0x5FF6
 PidTagRecipientEntryId = 0x5FF7
 PidTagRtfInSync = 0x0E1F
+PidTagInternetMessageId = 0x1035
+PidTagReceiptTime = 0x002A

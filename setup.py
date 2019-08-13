@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='mapi',
+    name='py-mapi',
     version='0.1',
     author="Marius Gligor",
     author_email="marius.gligor@gmail.com",

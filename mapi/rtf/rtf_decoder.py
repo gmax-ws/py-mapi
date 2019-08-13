@@ -132,7 +132,8 @@ class RtfParser(RtfHtml):
         if self.is_html():
             return self.export(self.rtf)
         else:
-            raise Exception("No HTML content! (mime: %s)" % self.mime)
+            return None
+            # raise Exception("No HTML content! (mime: %s)" % self.mime)
 
     def decode_text(self):
         return striprtf.rtf_to_text(self.rtf)
