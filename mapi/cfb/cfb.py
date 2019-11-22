@@ -1,12 +1,11 @@
 import io
+from abc import abstractmethod
 from math import pow
 
 from mapi.util.decoder import *
 from mapi.util.logger import log
 
-__all__ = ['Cfb', 'MSG_ROOT', 'MSG_NAMEID', 'MSG_RECIP', 'MSG_ATTACH', 'MSG_SUBSTG', 'MSG_EMBEDDED', 'MSG_PROPS']
-
-DEBUG = False
+__all__ = ['Cfb', 'ROOT_ENTRY']
 
 HEADER_SIZE = 512
 HEADER_SIGNATURE = b"\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"
@@ -41,13 +40,7 @@ DIFSECT = 0xFFFFFFFC
 FATSECT = 0xFFFFFFFD
 MAXREGSECT = 0xFFFFFFFA
 
-MSG_ROOT = "Root Entry"
-MSG_NAMEID = "__nameid_version1.0"
-MSG_RECIP = "__recip_version1.0"
-MSG_ATTACH = "__attach_version1.0"
-MSG_SUBSTG = "__substg1.0_"
-MSG_PROPS = "__properties_version1.0"
-MSG_EMBEDDED = "__substg1.0_3701000D"
+ROOT_ENTRY = "Root Entry"
 
 
 class CfbHeader:
@@ -79,12 +72,12 @@ class CfbHeader:
         if major == VERSION_4:
             assert (sector_size == SECTOR_SIZE_4)
 
-        log.debug("version: %d.%d sector size: %d FAT size: %d" %
-                  (major, minor, sector_size, self.fat_size()))
-        log.debug("mini FAT location: %d mini FAT size: %d" %
-                  (self.mini_fat_sector(), self.mini_fat_size()))
-        log.debug("mini stream sector size: %d mini stream size cutoff: %d" %
-                  (self.mini_stream_sector_size(), self.mini_stream_size_cutoff()))
+        log.info("Version: %d.%d ~ Sector size: %d ~ FAT size: %d" %
+                 (major, minor, sector_size, self.fat_size()))
+        log.info("MiniFAT location: %d ~ MiniFAT size: %d" %
+                 (self.mini_fat_sector(), self.mini_fat_size()))
+        log.info("MiniStream sector size: %d ~ MiniStream cutoff: %d" %
+                 (self.mini_stream_sector_size(), self.mini_stream_size_cutoff()))
 
     def version(self):
         return uint16(self.header[24:26]), uint16(self.header[26:28])
@@ -136,18 +129,21 @@ class CfbFatBase:
         self.type = _type
         log.debug("fat (%d): %s" % (self.sector_size, self.fat))
 
+    @abstractmethod
     def offset(self, sector_number):
         pass
 
 
 class CfbFat(CfbFatBase):
 
+    @override
     def offset(self, sector_number):
         return (sector_number + 1) * self.sector_size, self.sector_size
 
 
 class CfbMiniFat(CfbFatBase):
 
+    @override
     def offset(self, sector_number):
         return int(sector_number * self.sector_size)
 
@@ -161,8 +157,7 @@ class CfbDirectory:
         log.debug("directory entries: %d" % len(_data))
         for i in range(0, len(self.entries)):
             self.entries[i].index = i
-            if DEBUG:
-                self.entries[i].info()
+            self.entries[i].info()
         self._make_tree()
 
     def _make_tree(self):
@@ -211,18 +206,6 @@ class CfbDirectory:
     def entry(self, index):
         assert (0 <= index < len(self.entries))
         return self.entries[index]
-
-    def recipients(self):
-        return self.select_entry_by_name(MSG_RECIP)
-
-    def attachments(self):
-        return self.select_entry_by_name(MSG_ATTACH)
-
-    def named_properties(self):
-        return self.select_entry_by_name(MSG_NAMEID)
-
-    def properties(self):
-        return self.select_entry_by_name(MSG_PROPS)
 
     def debug(self, name):
         entry = self.find_entry_by_name(name)
@@ -369,10 +352,9 @@ class Cfb:
         self.cfb_fat = CfbFat(fat, self.sector_size)
 
     def _mini_fat(self):
-        mini_fat = []
-
         _start = self.cfb_header.mini_fat_sector()
 
+        mini_fat = []
         while _start != ENDOFCHAIN:
             mini_fat.extend(self.split(self._read_file_sector(_start)))
             _next = self.cfb_fat.fat[_start]

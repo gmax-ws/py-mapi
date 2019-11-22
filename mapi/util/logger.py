@@ -7,7 +7,7 @@ handler.setFormatter(formatter)
 
 log = logging.getLogger()
 log.addHandler(handler)
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 
 def set_file_handler(file_handler):
@@ -16,4 +16,5 @@ def set_file_handler(file_handler):
     log.addHandler(file_handler)
 
 
-# set_file_handler("mapi.log")
+def set_log_level(level):
+    log.setLevel(level)

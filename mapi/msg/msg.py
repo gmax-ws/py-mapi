@@ -23,13 +23,20 @@ BASE_STREAM_ID = 0x1000
 MIN_ID = 0x8000
 MAX_ID = 0xFFFE
 
+MSG_NAMEID = "__nameid_version1.0"
+MSG_RECIP = "__recip_version1.0"
+MSG_ATTACH = "__attach_version1.0"
+MSG_SUBSTG = "__substg1.0_"
+MSG_PROPS = "__properties_version1.0"
+MSG_EMBEDDED = "__substg1.0_3701000D"
+
 
 class MsgNamedProperties:
     __slots__ = ['cfb', 'props', 'guids', 'entry', 'string']
 
     def __init__(self, cfb):
         self.cfb = cfb
-        self.props = cfb.cfb_root.named_properties()[0]
+        self.props = cfb.cfb_root.select_entry_by_name(MSG_NAMEID)[0]
 
         name = MsgStorage.property_name(PidTagNameidStreamGuid, PtypBinary)
         _data = cfb.read_stream(self.props, name)
@@ -136,7 +143,7 @@ class MsgProperties:
                 print(hex(prop[0]), hex(prop[1]), hex(prop[2]), prop[3])
 
     def _header(self, name, props):
-        if name.startswith(MSG_ROOT):
+        if name.startswith(ROOT_ENTRY):
             self.header = props[0:32]
         else:
             if name == MSG_EMBEDDED:
@@ -420,7 +427,9 @@ class MsgAttachment(MsgStorage):
 class MsgAttachments:
     __slots__ = ['attachments']
 
-    def __init__(self, cfb, attachments):
+    def __init__(self, cfb, attachments=None):
+        if attachments is None:
+            attachments = cfb.cfb_root.select_entry_by_name(MSG_ATTACH)
         self.attachments = [MsgAttachment(cfb, attachment) for attachment in attachments]
 
     def __len__(self):
@@ -452,7 +461,9 @@ class MsgRecipient(MsgStorage):
 class MsgRecipients:
     __slots__ = ['recipients']
 
-    def __init__(self, cfb, recipients):
+    def __init__(self, cfb, recipients=None):
+        if recipients is None:
+            recipients = cfb.cfb_root.select_entry_by_name(MSG_RECIP)
         self.recipients = [MsgRecipient(cfb, recipient) for recipient in recipients]
 
     def __len__(self):
@@ -466,11 +477,12 @@ class MsgRecipients:
 class Msg(MsgRoot):
     __slots__ = ['named_props', 'recipients', 'attachments']
 
-    def __init__(self, cfb):
+    def __init__(self, fp):
+        cfb = Cfb(fp)
         super().__init__(cfb, cfb.cfb_root.root())
         self.named_props = MsgNamedProperties(cfb)
-        self.recipients = MsgRecipients(cfb, cfb.cfb_root.recipients())
-        self.attachments = MsgAttachments(cfb, cfb.cfb_root.attachments())
+        self.recipients = MsgRecipients(cfb)
+        self.attachments = MsgAttachments(cfb)
 
     def get_root(self):
         return self

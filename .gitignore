@@ -4,6 +4,7 @@ venv/
 samples/
 
 .Python
+*.pyc
 build/
 develop-eggs/
 dist/

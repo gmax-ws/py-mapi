@@ -1,8 +1,8 @@
 import os
 from io import BytesIO
 
-from mapi.cfb.cfb import Cfb
 from mapi.msg.msg import Msg
+from mapi.wrx.wrx import Wrx
 from mapi.pst.pst import Pst
 
 MAX_MEMORY_MSG_FILE_LENGTH = 50000000
@@ -36,6 +36,8 @@ class MApi:
     def select(self, stream):
         if self.ext == 'msg':
             return self.ns_msg(stream)
+        elif self.ext == 'wrx':
+            return self.ns_wrx(stream)
         elif self.ext == 'pst':
             return self.ns_pst(stream)
         else:
@@ -43,8 +45,11 @@ class MApi:
 
     @staticmethod
     def ns_msg(fp):
-        cfb = Cfb(fp)
-        return Msg(cfb)
+        return Msg(fp)
+
+    @staticmethod
+    def ns_wrx(fp):
+        return Wrx(fp)
 
     @staticmethod
     def ns_pst(fp):

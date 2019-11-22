@@ -2,7 +2,11 @@ import struct
 
 __all_ = ['int8', 'uint8', 'int16', 'uint16', 'int32',
           'uint32', 'int64', 'uint64', 'utf8', 'utf16',
-          'uint16be', 'uint32be', 'to_hex', 'guid']
+          'uint16be', 'uint32be', 'to_hex', 'guid', 'override']
+
+
+def override(f):
+    return f
 
 
 def int8(data):

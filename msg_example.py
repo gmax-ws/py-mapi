@@ -33,6 +33,9 @@ def extract_attachments(mapi, location="./"):
 
 
 if __name__ == '__main__':
+    import logging
+    log.setLevel(logging.INFO)
+
     file_name = "./samples/test2.msg"
 
     with TimeTracker() as t:
